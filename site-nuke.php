@@ -8,7 +8,7 @@
  * Requires PHP:      7.4
  * Tested up to:      6.9
  * Author:            Awesome Akinfenwa
- * Author URI:        https://hawsome.github.io/
+ * Author URI:        https://github.com/Hawsome
  * Text Domain:       site-nuke
  * License:           GPL2
  */
