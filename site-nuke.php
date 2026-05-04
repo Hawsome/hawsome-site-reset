@@ -1,14 +1,14 @@
 <?php
 /**
  * Plugin Name:       Site Nuke
- * Plugin URI:        https://awesomeakinfenwa.com/site-nuke
+ * Plugin URI:        https://hawsome.github.io/
  * Description:       Permanently wipes your database and deletes all media, plugins, and inactive themes to restore a clean factory state.
  * Version:           1.0.0
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Tested up to:      6.9
  * Author:            Awesome Akinfenwa
- * Author URI:        https://awesomeakinfenwa.com/
+ * Author URI:        https://hawsome.github.io/
  * Text Domain:       site-nuke
  * License:           GPL2
  */
