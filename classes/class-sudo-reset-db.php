@@ -1,10 +1,13 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-class Site_Nuke_DB {
+class Sudo_Reset_DB {
 
 	public function purge_database() {
 		global $wpdb;
+
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
+		$wpdb->query( "SET FOREIGN_KEY_CHECKS = 0" );
 
 		$core_tables = array( 'posts', 'postmeta', 'comments', 'commentmeta', 'terms', 'termmeta', 'term_taxonomy', 'term_relationships', 'options', 'users', 'usermeta', 'links' );
 		
@@ -13,24 +16,24 @@ class Site_Nuke_DB {
 
 		foreach ( $all_tables as $table_name ) {
 			$base_name  = str_replace( $wpdb->prefix, '', $table_name );
-			$table_name = esc_sql( $table_name );
+			$safe_table = '`' . esc_sql( $table_name ) . '`'; 
 			
 			if ( in_array( $base_name, $core_tables, true ) ) {
 				if ( ! in_array( $base_name, array( 'options', 'users', 'usermeta' ), true ) ) {
 					// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter
-					$wpdb->query( "DELETE FROM {$table_name}" );
+					$wpdb->query( "DELETE FROM {$safe_table}" );
 				}
 			} else {
 				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.DirectDatabaseQuery.SchemaChange, PluginCheck.Security.DirectDB.UnescapedDBParameter
-				$wpdb->query( "DROP TABLE IF EXISTS {$table_name}" );
+				$wpdb->query( "DROP TABLE IF EXISTS {$safe_table}" );
 			}
 		}
 
 		$current_user_id = get_current_user_id();
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}users WHERE ID != %d", $current_user_id ) );
+		$wpdb->query( $wpdb->prepare( "DELETE FROM `{$wpdb->prefix}users` WHERE ID != %d", $current_user_id ) );
 		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-		$wpdb->query( $wpdb->prepare( "DELETE FROM {$wpdb->prefix}usermeta WHERE user_id != %d", $current_user_id ) );
+		$wpdb->query( $wpdb->prepare( "DELETE FROM `{$wpdb->prefix}usermeta` WHERE user_id != %d", $current_user_id ) );
 
 		$options_to_keep = array(
 			'siteurl', 'home', 'blogname', 'blogdescription', 'admin_email', 
@@ -48,7 +51,7 @@ class Site_Nuke_DB {
 		// phpcs:disable WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber
 		$wpdb->query( 
 			$wpdb->prepare( 
-				"DELETE FROM {$wpdb->prefix}options 
+				"DELETE FROM `{$wpdb->prefix}options` 
 				WHERE option_name NOT IN ($placeholders) 
 				AND option_name NOT LIKE %s 
 				AND option_name NOT LIKE %s", 
@@ -57,10 +60,13 @@ class Site_Nuke_DB {
 		);
 		// phpcs:enable
 
+		// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange
+		$wpdb->query( "SET FOREIGN_KEY_CHECKS = 1" );
+
 		wp_cache_flush();
 
-		if ( defined( 'SITE_NUKE_BASENAME' ) ) {
-			update_option( 'active_plugins', array( SITE_NUKE_BASENAME ) );
+		if ( defined( 'SUDO_RESET_BASENAME' ) ) {
+			update_option( 'active_plugins', array( SUDO_RESET_BASENAME ) );
 		}
 	}
 

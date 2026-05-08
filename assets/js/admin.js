@@ -1,12 +1,12 @@
 document.addEventListener( 'DOMContentLoaded', function() {
-    var analyzeBtn = document.getElementById( 'site-nuke-run-analysis' );
-    var progressArea = document.getElementById( 'site-nuke-analysis-progress' );
-    var impactReport = document.getElementById( 'site-nuke-impact-report' );
-    var confirmationArea = document.getElementById( 'site-nuke-confirmation' );
-    var confirmInput = document.getElementById( 'site-nuke-confirm' );
-    var submitButton = document.getElementById( 'site-nuke-submit' );
-    var loadingText = document.querySelector( '.site-nuke-loading-text' );
-    var progressBar = document.querySelector( '.site-nuke-progress-bar' );
+    var analyzeBtn = document.getElementById( 'sudo-reset-run-analysis' );
+    var progressArea = document.getElementById( 'sudo-reset-analysis-progress' );
+    var impactReport = document.getElementById( 'sudo-reset-impact-report' );
+    var confirmationArea = document.getElementById( 'sudo-reset-confirmation' );
+    var confirmInput = document.getElementById( 'sudo-reset-confirm' );
+    var submitButton = document.getElementById( 'sudo-reset-submit' );
+    var loadingText = document.querySelector( '.sudo-reset-loading-text' );
+    var progressBar = document.querySelector( '.sudo-reset-progress-bar' );
 
     var statData = {};
 
@@ -22,11 +22,11 @@ document.addEventListener( 'DOMContentLoaded', function() {
 
     function runAnalysisStep( step ) {
         var data = new FormData();
-        data.append( 'action', 'site_nuke_analyze' );
-        data.append( 'nonce', siteNukeData.nonce );
+        data.append( 'action', 'sudo_reset_analyze' );
+        data.append( 'nonce', sudoResetData.nonce );
         data.append( 'scan_step', step );
 
-        fetch( siteNukeData.ajaxurl, { method: 'POST', body: data } )
+        fetch( sudoResetData.ajaxurl, { method: 'POST', body: data } )
         .then( response => response.json() )
         .then( result => {
             if ( ! result.success ) { alert( 'Analysis failed: ' + result.data ); return; }
@@ -56,7 +56,7 @@ document.addEventListener( 'DOMContentLoaded', function() {
 
     function buildListHtml( summaryText, items ) {
         if ( ! items || items.length === 0 ) return '';
-        var html = '<details class="site-nuke-details"><summary>' + summaryText + '</summary><div class="site-nuke-details-list"><ul>';
+        var html = '<details class="sudo-reset-details"><summary>' + summaryText + '</summary><div class="sudo-reset-details-list"><ul>';
         items.forEach( function( item ) { html += '<li>' + item + '</li>'; } );
         html += '</ul></div></details>';
         return html;
