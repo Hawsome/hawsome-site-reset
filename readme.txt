@@ -1,4 +1,4 @@
-=== Sudo Site Reset ===
+=== Hawsome Site Reset ===
 Contributors: hawesome
 Requires at least: 6.0
 Tested up to: 6.9
@@ -13,7 +13,7 @@ A developer tool to permanently wipe your database and delete all media, themes,
 
 **WARNING: THIS PLUGIN IS HIGHLY DESTRUCTIVE. USE WITH EXTREME CAUTION.**
 
-Sudo Site Reset is an advanced reset tool for developers. It completely wipes your server of accumulated bloat, restoring your site to a clean factory state.
+Hawsome Site Reset is an advanced reset tool for developers. It completely wipes your server of accumulated bloat, restoring your site to a clean factory state.
 
 When executed, this plugin will:
 * Delete all data from standard WordPress database tables.
@@ -23,9 +23,9 @@ When executed, this plugin will:
 
 == Installation ==
 
-1. Upload the `sudo-site-reset` folder to the `/wp-content/plugins/` directory.
+1. Upload the `hawsome-site-reset` folder to the `/wp-content/plugins/` directory.
 2. Activate the plugin through the 'Plugins' menu in WordPress.
-3. Navigate to Tools > Sudo Reset in your WordPress admin dashboard.
+3. Navigate to Tools > Hawsome Reset in your WordPress admin dashboard.
 
 == Changelog ==
 

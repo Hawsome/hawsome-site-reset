@@ -1,7 +1,7 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-class Sudo_Reset_DB {
+class hawsome_reset_DB {
 
 	public function purge_database() {
 		global $wpdb;
@@ -65,8 +65,8 @@ class Sudo_Reset_DB {
 
 		wp_cache_flush();
 
-		if ( defined( 'SUDO_RESET_BASENAME' ) ) {
-			update_option( 'active_plugins', array( SUDO_RESET_BASENAME ) );
+		if ( defined( 'hawsome_reset_BASENAME' ) ) {
+			update_option( 'active_plugins', array( hawsome_reset_BASENAME ) );
 		}
 	}
 

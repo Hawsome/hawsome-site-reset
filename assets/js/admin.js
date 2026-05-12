@@ -22,11 +22,11 @@ document.addEventListener( 'DOMContentLoaded', function() {
 
     function runAnalysisStep( step ) {
         var data = new FormData();
-        data.append( 'action', 'sudo_reset_analyze' );
-        data.append( 'nonce', sudoResetData.nonce );
+        data.append( 'action', 'hawsome_reset_analyze' );
+        data.append( 'nonce', hawsomeResetData.nonce );
         data.append( 'scan_step', step );
 
-        fetch( sudoResetData.ajaxurl, { method: 'POST', body: data } )
+        fetch( hawsomeResetData.ajaxurl, { method: 'POST', body: data } )
         .then( response => response.json() )
         .then( result => {
             if ( ! result.success ) { alert( 'Analysis failed: ' + result.data ); return; }

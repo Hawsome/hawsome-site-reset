@@ -1,7 +1,7 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) exit;
 
-class Sudo_Reset_Filesystem {
+class hawsome_reset_Filesystem {
 
 	public function chunked_wipe( $user_id ) {
 		require_once ABSPATH . 'wp-admin/includes/file.php';
@@ -12,7 +12,7 @@ class Sudo_Reset_Filesystem {
 			return array( 'status' => 'error', 'message' => 'Filesystem access denied.' );
 		}
 
-		$queue = get_transient( 'sudo_reset_fs_queue_' . $user_id );
+		$queue = get_transient( 'hawsome_reset_fs_queue_' . $user_id );
 		if ( false === $queue ) {
 			$upload_dir = wp_upload_dir();
 			$queue = array(
@@ -25,7 +25,7 @@ class Sudo_Reset_Filesystem {
 		$start_time = microtime( true );
 		$deleted_count = 0;
 
-		$our_plugin_dir   = wp_normalize_path( WP_PLUGIN_DIR . '/' . dirname( SUDO_RESET_BASENAME ) );
+		$our_plugin_dir   = wp_normalize_path( WP_PLUGIN_DIR . '/' . dirname( hawsome_reset_BASENAME ) );
 		$active_theme_dir = wp_normalize_path( get_theme_root() . '/' . get_stylesheet() );
 
 		$roots = array(
@@ -77,10 +77,10 @@ class Sudo_Reset_Filesystem {
 		}
 
 		if ( empty( $queue ) ) {
-			delete_transient( 'sudo_reset_fs_queue_' . $user_id );
+			delete_transient( 'hawsome_reset_fs_queue_' . $user_id );
 			return array( 'status' => 'complete', 'deleted' => $deleted_count );
 		} else {
-			set_transient( 'sudo_reset_fs_queue_' . $user_id, $queue, HOUR_IN_SECONDS );
+			set_transient( 'hawsome_reset_fs_queue_' . $user_id, $queue, HOUR_IN_SECONDS );
 			return array( 'status' => 'processing', 'deleted' => $deleted_count );
 		}
 	}

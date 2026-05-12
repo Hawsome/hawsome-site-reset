@@ -11,12 +11,12 @@ document.addEventListener( 'DOMContentLoaded', function() {
 
     async function step(action_step) {
         let fd = new FormData();
-        fd.append("action", "sudo_reset_execute_ajax");
-        fd.append("nonce", sudoResetTerminal.nonce);
-        fd.append("exec_token", sudoResetTerminal.exec_token);
+        fd.append("action", "hawsome_reset_execute_ajax");
+        fd.append("nonce", hawsomeResetTerminal.nonce);
+        fd.append("exec_token", hawsomeResetTerminal.exec_token);
         fd.append("reset_step", action_step);
 
-        let res = await fetch(sudoResetTerminal.ajaxurl, {method:"POST", body:fd});
+        let res = await fetch(hawsomeResetTerminal.ajaxurl, {method:"POST", body:fd});
         return await res.json();
     }
 
@@ -48,7 +48,7 @@ document.addEventListener( 'DOMContentLoaded', function() {
         log("System successfully restored.");
 
         log("WIPE COMPLETE. Redirecting to dashboard...");
-        setTimeout(() => { window.location.href = sudoResetTerminal.redirect_url; }, 2000);
+        setTimeout(() => { window.location.href = hawsomeResetTerminal.redirect_url; }, 2000);
     }
     
     setTimeout(runNuke, 1000);
