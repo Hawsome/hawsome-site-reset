@@ -27,6 +27,17 @@ When executed, this plugin will:
 2. Activate the plugin through the 'Plugins' menu in WordPress.
 3. Navigate to Tools > Hawsome Reset in your WordPress admin dashboard.
 
+== Frequently Asked Questions ==
+
+= Will I be logged out after the reset? =
+No. Your active session token and Administrator account are strictly preserved. You will remain logged in seamlessly.
+
+= What happens to my active theme? =
+Your currently active theme is completely shielded from the filesystem wipe and remains 100% active. All other inactive themes and default WordPress themes are permanently deleted from the server.
+
+= Will this delete caching drop-ins? =
+Yes. The plugin aggressively scans the `wp-content` root and permanently removes files like `advanced-cache.php` and `objectcache.php` to prevent fatal errors upon reboot.
+
 == Changelog ==
 = 1.5.0 =
 * Major Update: Comprehensive Database Engine Rewrite.
@@ -41,3 +52,10 @@ When executed, this plugin will:
 
 = 1.0.0 =
 * Initial release.
+
+== Screenshots ==
+
+1. The Pre-Reset Analysis dashboard showing the Impact Report.
+2. The Final Verification step with the secure password prompt.
+3. The Active Mission Control terminal wiping the site in real-time.
+4. The success screen confirming the database and filesystem have been completely purged.
