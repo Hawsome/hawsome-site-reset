@@ -9,17 +9,24 @@ class hawsome_reset_Filesystem {
 		global $wp_filesystem;
 
 		if ( ! is_object( $wp_filesystem ) ) {
-			return array( 'status' => 'error', 'message' => 'Filesystem access denied.' );
+			return array( 'status' => 'error', 'message' => __( 'Filesystem access denied.', 'hawsome-site-reset' ) );
 		}
 
 		$queue = get_transient( 'hawsome_reset_fs_queue_' . $user_id );
+		
 		if ( false === $queue ) {
-			$upload_dir = wp_upload_dir();
-			$queue = array(
-				wp_normalize_path( $upload_dir['basedir'] ),
-				wp_normalize_path( WP_PLUGIN_DIR ),
-				wp_normalize_path( get_theme_root() )
-			);
+			// Seed the queue with the absolute root of wp-content
+			$queue = array( wp_normalize_path( WP_CONTENT_DIR ) );
+
+			// Recursively delete non-default folders and cache drop-ins
+			$drop_ins = array( 'advanced-cache.php', 'objectcache.php', 'db.php', 'maintenance.php', 'sunrise.php', 'upgrade', 'cache' );
+			foreach ( $drop_ins as $drop_in ) {
+				$drop_in_path = wp_normalize_path( WP_CONTENT_DIR . '/' . $drop_in );
+				if ( $wp_filesystem->exists( $drop_in_path ) ) {
+					// The 'true' parameter guarantees recursive deletion of folders
+					$wp_filesystem->delete( $drop_in_path, true );
+				}
+			}
 		}
 
 		$start_time = microtime( true );
@@ -28,7 +35,9 @@ class hawsome_reset_Filesystem {
 		$our_plugin_dir   = wp_normalize_path( WP_PLUGIN_DIR . '/' . dirname( hawsome_reset_BASENAME ) );
 		$active_theme_dir = wp_normalize_path( get_theme_root() . '/' . get_stylesheet() );
 
+		// Define all critical WordPress content roots so their native index.php files are spared
 		$roots = array(
+			wp_normalize_path( WP_CONTENT_DIR ),
 			wp_normalize_path( wp_upload_dir()['basedir'] ),
 			wp_normalize_path( WP_PLUGIN_DIR ),
 			wp_normalize_path( get_theme_root() )

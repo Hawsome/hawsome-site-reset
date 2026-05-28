@@ -28,9 +28,11 @@ class hawsome_reset_Admin {
 			'nonce'   => wp_create_nonce( 'hawsome_reset_action' )
 		) );
 
-		// ENQUEUE TERMINAL JS ONLY ON TERMINAL PAGE
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		if ( isset( $_GET['action'] ) && 'terminal' === $_GET['action'] ) {
+		$action = isset( $_GET['action'] ) ? sanitize_text_field( wp_unslash( $_GET['action'] ) ) : '';
+
+		// ENQUEUE TERMINAL JS ONLY ON TERMINAL PAGE
+		if ( 'terminal' === $action ) {
 			wp_enqueue_script( 'sudo-reset-terminal-js', hawsome_reset_URL . 'assets/js/terminal.js', array(), hawsome_reset_VERSION, true );
 			$exec_token = get_transient( 'hawsome_reset_exec_' . get_current_user_id() );
 			wp_localize_script( 'sudo-reset-terminal-js', 'hawsomeResetTerminal', array(
@@ -48,17 +50,20 @@ class hawsome_reset_Admin {
 			return;
 		}
 
-		// THE TERMINAL RENDERER
 		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		if ( isset( $_GET['action'] ) && 'terminal' === $_GET['action'] ) {
+		$action = isset( $_GET['action'] ) ? sanitize_text_field( wp_unslash( $_GET['action'] ) ) : '';
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
+		$wiped  = isset( $_GET['wiped'] ) ? sanitize_text_field( wp_unslash( $_GET['wiped'] ) ) : '';
+
+		// THE TERMINAL RENDERER
+		if ( 'terminal' === $action ) {
 			echo '<div class="wrap"><h1>' . esc_html__( 'Active Mission Control', 'hawsome-site-reset' ) . '</h1>';
 			echo '<div style="background:#0a0a0a; color:#00ff00; font-family:monospace; padding:20px; border-radius:5px; height:300px; overflow-y:auto; border: 1px solid #333;" id="nuke-terminal"><p style="margin:0;">> INITIALIZING Hawsome Reset PROTOCOL...</p></div>';
 			echo '<div style="background:#ddd; height:15px; margin-top:20px; border-radius:10px; overflow:hidden;"><div id="nuke-progress" style="background:#d63638; width:0%; height:100%; transition: width 0.3s;"></div></div></div>';
 			return;
 		}
 
-		// phpcs:ignore WordPress.Security.NonceVerification.Recommended
-		if ( isset( $_GET['wiped'] ) && 'true' === $_GET['wiped'] ) {
+		if ( 'true' === $wiped ) {
 			echo '<div class="notice notice-success"><p><strong>' . esc_html__( 'WIPE SUCCESSFUL:', 'hawsome-site-reset' ) . '</strong> ' . esc_html__( 'The database and filesystem have been purged.', 'hawsome-site-reset' ) . '</p></div>';
 		}
 
@@ -67,8 +72,8 @@ class hawsome_reset_Admin {
 		<div class="wrap sudo-reset-premium-wrapper">
 			<h1><?php esc_html_e( 'Hawsome Site Reset', 'hawsome-site-reset' ); ?></h1>
 			<div class="sudo-reset-card">
-				<h2><?php esc_html_e( 'Pre-Flight Initialization', 'hawsome-site-reset' ); ?></h2>
-				<p><strong><?php esc_html_e( 'WARNING:', 'hawsome-site-reset' ); ?></strong> <?php esc_html_e( 'This tool will permanently delete all content. Please run an Impact Analysis.', 'hawsome-site-reset' ); ?></p>
+				<h2><?php esc_html_e( 'Pre-Reset Analysis', 'hawsome-site-reset' ); ?></h2>
+				<p><strong><?php esc_html_e( 'WARNING:', 'hawsome-site-reset' ); ?></strong> <?php esc_html_e( 'This tool will permanently wipe your database, media, and inactive plugins/themes to restore a factory state. Your admin account and active theme will be preserved. Please run an Impact Analysis.', 'hawsome-site-reset' ); ?></p>
 				<button id="sudo-reset-run-analysis" class="button button-primary button-hero" style="margin-top: 15px;"><?php esc_html_e( 'Scan Site Data', 'hawsome-site-reset' ); ?></button>
 				
 				<div id="sudo-reset-analysis-progress" style="display: none;">
@@ -109,7 +114,7 @@ class hawsome_reset_Admin {
 						<p style="margin-top:0;"><label for="sudo-reset-confirm"><strong>
 							<?php 
 							/* translators: %s: The dynamic confirmation string */
-							printf( esc_html__( 'To proceed to Sudo Verification, type "%s" exactly:', 'hawsome-site-reset' ), esc_html( $dynamic_string ) ); 
+							printf( esc_html__( 'To proceed to Final Verification, type "%s" exactly:', 'hawsome-site-reset' ), esc_html( $dynamic_string ) ); 
 							?>
 						</strong></label></p>
 						<input type="text" id="sudo-reset-confirm" name="hawsome_reset_confirm" autocomplete="off" required style="border: 2px solid #d63638; font-size: 16px; padding: 5px; width: 300px;" data-expected="<?php echo esc_attr( $dynamic_string ); ?>">

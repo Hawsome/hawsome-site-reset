@@ -12,7 +12,7 @@ class hawsome_reset_Core {
 
 	public function ajax_analyze() {
 		check_ajax_referer( 'hawsome_reset_action', 'nonce' );
-		if ( ! current_user_can( 'manage_options' ) || is_multisite() ) wp_send_json_error( 'Unauthorized.' );
+		if ( ! current_user_can( 'manage_options' ) || is_multisite() ) wp_send_json_error( __( 'Unauthorized.', 'hawsome-site-reset' ) );
 
 		$step = isset( $_POST['scan_step'] ) ? sanitize_text_field( wp_unslash( $_POST['scan_step'] ) ) : 'init';
 		$user_id = get_current_user_id();
@@ -24,10 +24,17 @@ class hawsome_reset_Core {
 			$post_counts = $wpdb->get_results( "SELECT post_type, COUNT(*) as count FROM {$wpdb->prefix}posts GROUP BY post_type", ARRAY_A );
 			$post_breakdown = array();
 			$total_posts = 0;
+			
 			if ( $post_counts ) {
 				foreach ( $post_counts as $row ) {
-					$post_breakdown[] = $row['count'] . ' ' . ucfirst( $row['post_type'] ) . '(s)';
-					$total_posts += (int) $row['count'];
+					$count = (int) $row['count'];
+					$post_breakdown[] = sprintf( 
+						/* translators: %1$s: Post count, %2$s: Post type (e.g. 5 Pages) */
+						_n( '%1$s %2$s', '%1$s %2$ss', $count, 'hawsome-site-reset' ), 
+						number_format_i18n( $count ), 
+						ucfirst( $row['post_type'] ) 
+					);
+					$total_posts += $count;
 				}
 			}
 
@@ -130,14 +137,39 @@ class hawsome_reset_Core {
 		set_transient( 'hawsome_reset_sudo_' . get_current_user_id(), $sudo_token, 5 * MINUTE_IN_SECONDS );
 
 		$form  = '<h2>' . esc_html__( 'Final Verification Required', 'hawsome-site-reset' ) . '</h2>';
-		$form .= '<p>' . esc_html__( 'Please re-enter your administrator password to authorize the complete destruction of this site.', 'hawsome-site-reset' ) . '</p>';
+		$form .= '<p>' . esc_html__( 'Please re-enter your administrator password to authorize the permanent factory reset of this site.', 'hawsome-site-reset' ) . '</p>';
 		$form .= '<form action="' . esc_url( admin_url( 'admin-post.php' ) ) . '" method="POST">';
 		$form .= '<input type="hidden" name="action" value="hawsome_reset_execute">';
 		$form .= '<input type="hidden" name="sudo_token" value="' . esc_attr( $sudo_token ) . '">';
 		$form .= wp_nonce_field( 'hawsome_reset_execute', 'hawsome_reset_execute_nonce', true, false );
-		$form .= '<div style="margin-bottom: 20px;"><input type="password" name="sudo_password" autocomplete="current-password" required autofocus style="padding: 8px; font-size: 16px; width: 100%; box-sizing: border-box;"></div>';
+		
+		$svg_show = '<svg id="icon-show" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>';
+		$svg_hide = '<svg id="icon-hide" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line></svg>';
+
+		$form .= '<div style="margin-bottom: 20px; position: relative;">';
+		$form .= '<input type="password" id="sudo_password" name="sudo_password" autocomplete="current-password" required autofocus style="padding: 8px; font-size: 16px; width: 100%; box-sizing: border-box; padding-right: 40px;">';
+		$form .= '<button type="button" id="toggle_sudo_password" style="position: absolute; right: 5px; top: 50%; transform: translateY(-50%); background: none; border: none; cursor: pointer; padding: 5px; display: flex; align-items: center; justify-content: center;">' . $svg_show . $svg_hide . '</button>';
+		$form .= '</div>';
+		
 		$form .= '<div><button type="submit" class="button button-primary" style="background:#d63638; border:none; color:#fff; cursor:pointer;">' . esc_html__( 'Verify & Destroy Site', 'hawsome-site-reset' ) . '</button></div>';
 		$form .= '</form>';
+
+		$form .= '<script>
+			document.getElementById("toggle_sudo_password").addEventListener("click", function() {
+				var passInput = document.getElementById("sudo_password");
+				var iconShow = document.getElementById("icon-show");
+				var iconHide = document.getElementById("icon-hide");
+				if (passInput.type === "password") {
+					passInput.type = "text";
+					iconShow.style.display = "none";
+					iconHide.style.display = "block";
+				} else {
+					passInput.type = "password";
+					iconShow.style.display = "block";
+					iconHide.style.display = "none";
+				}
+			});
+		</script>';
 
 		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 		wp_die( $form, esc_html__( 'Sudo Verification', 'hawsome-site-reset' ) );
@@ -176,20 +208,20 @@ class hawsome_reset_Core {
 
 	public function ajax_execute() {
 		check_ajax_referer( 'hawsome_reset_exec_ajax', 'nonce' );
-		if ( ! current_user_can( 'manage_options' ) || is_multisite() ) wp_send_json_error( 'Unauthorized.' );
+		if ( ! current_user_can( 'manage_options' ) || is_multisite() ) wp_send_json_error( __( 'Unauthorized.', 'hawsome-site-reset' ) );
 
 		$user_id = get_current_user_id();
 		$submitted_token = isset( $_POST['exec_token'] ) ? sanitize_text_field( wp_unslash( $_POST['exec_token'] ) ) : '';
 		$saved_token = get_transient( 'hawsome_reset_exec_' . $user_id );
 
-		if ( ! $saved_token || $submitted_token !== $saved_token ) wp_send_json_error( 'Security Token Invalid.' );
+		if ( ! $saved_token || $submitted_token !== $saved_token ) wp_send_json_error( __( 'Security Token Invalid.', 'hawsome-site-reset' ) );
 
 		$step = isset( $_POST['reset_step'] ) ? sanitize_text_field( wp_unslash( $_POST['reset_step'] ) ) : '';
 
 		if ( 'database' === $step ) {
 			$db_engine = new hawsome_reset_DB();
 			$db_engine->purge_database();
-			wp_send_json_success( 'Database Purged.' );
+			wp_send_json_success( __( 'Database Purged.', 'hawsome-site-reset' ) );
 		}
 
 		if ( 'filesystem' === $step ) {
@@ -210,7 +242,7 @@ class hawsome_reset_Core {
 
 			delete_transient( 'hawsome_reset_exec_' . $user_id );
 			delete_transient( 'hawsome_reset_strikes_' . $user_id );
-			wp_send_json_success( 'Restore Complete.' );
+			wp_send_json_success( __( 'Restore Complete.', 'hawsome-site-reset' ) );
 		}
 	}
 

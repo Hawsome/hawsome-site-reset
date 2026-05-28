@@ -1,8 +1,8 @@
 === Hawsome Site Reset ===
 Contributors: hawesome
 Requires at least: 6.0
-Tested up to: 6.9
-Stable tag: 1.0.0
+Tested up to: 7.0
+Stable tag: 1.5.0
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -28,6 +28,16 @@ When executed, this plugin will:
 3. Navigate to Tools > Hawsome Reset in your WordPress admin dashboard.
 
 == Changelog ==
+= 1.5.0 =
+* Major Update: Comprehensive Database Engine Rewrite.
+* Architecture: Implemented a dual-pass database scrub to permanently eradicate residual plugin data and delayed background writes during PHP shutdown.
+* Architecture: Expanded the chunked filesystem wiper to aggressively scan the entire `wp-content` directory, removing orphaned cache directories and drop-ins (`advanced-cache.php`, etc.) while protecting the active theme.
+* Database: Added `AUTO_INCREMENT` normalization so database IDs sequence perfectly, mirroring a pristine WordPress installation.
+* Security: Implemented zero-footprint execution; the plugin now instantly deletes its own temporary security transients upon completion.
+* Security: Strict WPCS compliance updates, superglobal sanitization, and verified nonce protection.
+* UI/UX: Added a dependency-free SVG password visibility toggle to the Final Verification screen.
+* UI/UX: Refined admin dashboard copywriting to clearly and accurately reflect a professional factory reset.
+* i18n: 100% translation ready with complete text domain initialization.
 
 = 1.0.0 =
 * Initial release.
