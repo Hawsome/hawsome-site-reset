@@ -3,7 +3,7 @@
  * Plugin Name:       Hawsome Site Reset
  * Plugin URI:        https://hawsome.github.io/
  * Description:       Permanently wipes your database and deletes all media, plugins, and inactive themes to restore a clean factory state.
- * Version:           1.5.0
+ * Version:           1.5.1
  * Requires at least: 6.0
  * Requires PHP:      7.4
  * Tested up to:      7.0
