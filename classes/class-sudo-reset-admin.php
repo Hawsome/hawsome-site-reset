@@ -4,10 +4,45 @@ if ( ! defined( 'ABSPATH' ) ) exit;
 class hawsome_reset_Admin {
 
 	public function __construct() {
-		add_action( 'admin_menu', array( $this, 'register_admin_page' ) );
-		add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
-		add_action( 'load-tools_page_hawsome-site-reset', array( $this, 'add_security_headers' ) );
-	}
+    add_action( 'admin_menu', array( $this, 'register_admin_page' ) );
+    add_action( 'admin_enqueue_scripts', array( $this, 'enqueue_assets' ) );
+    add_action( 'load-tools_page_hawsome-site-reset', array( $this, 'add_security_headers' ) );
+    add_action( 'admin_notices', array( $this, 'maybe_show_review_notice' ) );
+    add_action( 'wp_ajax_hawsome_dismiss_review', array( $this, 'dismiss_review_notice' ) );
+}
+
+public function maybe_show_review_notice() {
+    if ( ! current_user_can( 'manage_options' ) ) return;
+    $dismissed = get_option( 'hawsome_review_dismissed' );
+    if ( $dismissed ) return;
+    $activated = get_option( 'hawsome_activated_time' );
+    if ( ! $activated ) {
+        update_option( 'hawsome_activated_time', time() );
+        return;
+    }
+    if ( ( time() - $activated ) < 7 * DAY_IN_SECONDS ) return;
+    ?>
+    <div class="notice notice-info is-dismissible" id="hawsome-review-notice">
+        <p>
+            <?php esc_html_e( 'Enjoying Hawsome Site Reset? An honest review on WordPress.org helps other developers find it.', 'hawsome-site-reset' ); ?>
+            <a href="https://wordpress.org/support/plugin/hawsome-site-reset/reviews/#new-post" target="_blank">
+                <?php esc_html_e( 'Leave a review →', 'hawsome-site-reset' ); ?>
+            </a>
+        </p>
+    </div>
+    <script>
+    jQuery(document).on('click', '#hawsome-review-notice .notice-dismiss', function() {
+        jQuery.post(ajaxurl, { action: 'hawsome_dismiss_review', nonce: '<?php echo esc_js( wp_create_nonce( "hawsome_dismiss_review" ) ); ?>' });
+    });
+    </script>
+    <?php
+}
+
+public function dismiss_review_notice() {
+    check_ajax_referer( 'hawsome_dismiss_review', 'nonce' );
+    update_option( 'hawsome_review_dismissed', true );
+    wp_send_json_success();
+}
 
 	public function add_security_headers() {
 		send_frame_options_header();

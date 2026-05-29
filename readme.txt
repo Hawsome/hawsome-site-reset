@@ -39,6 +39,9 @@ Your currently active theme is completely shielded from the filesystem wipe and 
 Yes. The plugin aggressively scans the `wp-content` root and permanently removes files like `advanced-cache.php` and `objectcache.php` to prevent fatal errors upon reboot.
 
 == Changelog ==
+= 1.5.1 =
+* UX: Added a dismissible admin notice prompting users to leave a review after 7 days, helping other developers discover the plugin.
+
 = 1.5.0 =
 * Major Update: Comprehensive Database Engine Rewrite.
 * Architecture: Implemented a dual-pass database scrub to permanently eradicate residual plugin data and delayed background writes during PHP shutdown.
